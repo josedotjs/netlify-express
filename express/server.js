@@ -16,11 +16,11 @@ router.get("/", (req, res) => {
 });
 router.get("/another", (req, res) => {
   const msg = {
-    to: "pepe81@msn.com",
+    to: "jose.grosso@gmail.com",
     from: "administrador@desarrolladorweb.net",
     subject: "Sending with Twilio SendGrid is Fun",
     text: "and easy to do anywhere, even with Node.js",
-    html: "<strong>and easy to do anywhere, even with Node.js</strong>",
+    html: `<strong>and easy to do anywhere, even with Node.js</strong><p>Enviado el ${new Date().toLocaleString()}</p>`,
   };
   sendgrid
     .send(msg)
