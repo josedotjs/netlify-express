@@ -14,7 +14,7 @@ router.get("/", (req, res) => {
   res.write("<h1>Hello from Express.js!</h1>");
   res.end();
 });
-router.get("/another", async (req, res) => {
+router.get("/another", (req, res) => {
   const msg = {
     to: "pepe81@msn.com",
     from: "administrador@desarrolladorweb.net",
@@ -22,13 +22,10 @@ router.get("/another", async (req, res) => {
     text: "and easy to do anywhere, even with Node.js",
     html: "<strong>and easy to do anywhere, even with Node.js</strong>",
   };
-  try {
-    await sendgrid.send(msg);
-  } catch (error) {
-    return res.status(error.statusCode || 500).json({ error: error.message });
-  }
-
-  res.sendStatus(200);
+  sendgrid
+    .send(msg)
+    .then(() => res.sendStatus(200))
+    .catch((e) => res.sendStatus(500));
 });
 
 router.post("/", (req, res) => res.json({ postBody: req.body }));
