@@ -4,6 +4,9 @@ const path = require('path');
 const serverless = require('serverless-http');
 const app = express();
 const bodyParser = require('body-parser');
+const sendgrid = require('@sendgrid/mail')
+
+sendgrid.setApiKey(process.env.SENDGRID_API_KEY)
 
 const router = express.Router();
 router.get('/', (req, res) => {
@@ -11,7 +14,24 @@ router.get('/', (req, res) => {
   res.write('<h1>Hello from Express.js!</h1>');
   res.end();
 });
-router.get('/another', (req, res) => res.json({ route: req.originalUrl }));
+router.get('/another', (req, res) => {
+  const msg = {
+    to: 'pepe81@msn.com',
+    from: 'administrador@desarrolladorweb.net',
+    subject: 'Sending with Twilio SendGrid is Fun',
+    text: 'and easy to do anywhere, even with Node.js',
+    html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+  }
+  try {
+    await sendgrid.send(msg);
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({ error: error.message });
+  }
+
+  res.sendStatus(200)
+
+})
+
 router.post('/', (req, res) => res.json({ postBody: req.body }));
 
 app.use(bodyParser.json());
