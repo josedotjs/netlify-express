@@ -8,25 +8,42 @@ const sendgrid = require("@sendgrid/mail");
 
 sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
 
+const mails = [
+  {
+    key: "biohard",
+    value: "alemanzur@hotmail.com",
+  },
+];
+
 const router = express.Router();
 router.get("/", (req, res) => {
   res.writeHead(200, { "Content-Type": "text/html" });
   res.write("<h1>Hello from Express.js!</h1>");
   res.end();
 });
-router.get("/another", (req, res) => {
+router.get("/another", (req, res) => {});
+
+router.post("/mailer/:id", sendMail);
+
+const sendMail = (req, res, next) => {
+  const destinatario = req.params.id;
+  const to = mails.find(
+    (mail) => mail.key === destinatario.toLowerCase().trim()
+  );
   const msg = {
-    to: "jose.grosso@gmail.com",
+    to: to.value,
     from: "administrador@desarrolladorweb.net",
-    subject: "Sending with Twilio SendGrid is Fun",
-    text: "and easy to do anywhere, even with Node.js",
-    html: `<strong>and easy to do anywhere, even with Node.js</strong><p>Enviado el ${new Date().toLocaleString()}</p>`,
+    subject: `☣️ Nueva consulta desde biohard.com.ar`,
+    text: req.body.message,
+    html: `${
+      req.body.message
+    } <p>Enviado el ${new Date().toLocaleString()}</p>`,
   };
   sendgrid
     .send(msg)
     .then(() => res.sendStatus(200))
-    .catch((e) => res.sendStatus(500));
-});
+    .catch((e) => next(e));
+};
 
 router.post("/", (req, res) => res.json({ postBody: req.body }));
 
